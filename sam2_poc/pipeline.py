@@ -89,7 +89,11 @@ def _get_predictor(settings: Settings, device: str):
             ) from exc
 
         if settings.sam2_hf_model_id:
-            predictor = SAM2VideoPredictor.from_pretrained(settings.sam2_hf_model_id, device=device)
+            predictor = SAM2VideoPredictor.from_pretrained(
+                settings.sam2_hf_model_id,
+                device=device,
+                vos_optimized=settings.sam2_vos_optimized,
+            )
         else:
             ckpt_path = Path(settings.sam2_checkpoint)
             if not ckpt_path.is_absolute():
