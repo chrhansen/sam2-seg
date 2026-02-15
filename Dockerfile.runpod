@@ -1,0 +1,32 @@
+FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
+    SAM2_DEVICE=cuda \
+    SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-large
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg libgl1 libglib2.0-0 \
+    git build-essential ninja-build \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt /tmp/requirements.txt
+
+RUN python -m pip install --upgrade pip setuptools wheel && \
+    python -m pip install --index-url https://download.pytorch.org/whl/cu124 torchvision==0.20.1 && \
+    grep -vE '^torch([<>=!~].*)?$' /tmp/requirements.txt > /tmp/requirements.notorch.txt && \
+    python -m pip install -r /tmp/requirements.notorch.txt && \
+    SAM2_BUILD_ALLOW_ERRORS=1 python -m pip install -v git+https://github.com/facebookresearch/sam2.git
+
+COPY . /app
+
+EXPOSE 8000
+
+CMD ["bash", "-lc", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]

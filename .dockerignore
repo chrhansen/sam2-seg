@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+runs
+.git
+.gitignore
+.DS_Store
+*.mp4
+*.mov
+*.mkv
+*.avi

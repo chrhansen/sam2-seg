@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+runs/
+.DS_Store
+
+# local test media
+*.mp4
+*.mov
+*.mkv
+*.avi
+
+# local planning docs
+IMPLEMENTATION_PLAN*.md
