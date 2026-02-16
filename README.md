@@ -24,13 +24,13 @@ pip install -e /tmp/sam2
 3. Download checkpoint (or use Hugging Face model id).
 
 Local checkpoint mode (default envs expected):
-- `SAM2_MODEL_CFG=configs/sam2.1/sam2.1_hiera_l.yaml`
-- `SAM2_CHECKPOINT=checkpoints/sam2.1_hiera_large.pt`
+- `SAM2_MODEL_CFG=configs/sam2.1/sam2.1_hiera_t.yaml`
+- `SAM2_CHECKPOINT=checkpoints/sam2.1_hiera_tiny.pt`
 
 Hugging Face mode:
 
 ```bash
-export SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-large
+export SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-tiny
 ```
 
 4. Run app:
@@ -68,7 +68,7 @@ Run locally with GPU:
 ```bash
 docker run --rm --gpus all -p 8000:8000 \
   -e SAM2_DEVICE=cuda \
-  -e SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-large \
+  -e SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-tiny \
   ghcr.io/chrhansen/sam2-seg:latest
 ```
 
@@ -77,6 +77,7 @@ For RunPod Pod image field, use: `ghcr.io/chrhansen/sam2-seg:latest`.
 ## Optional knobs
 
 - `SAM2_DEVICE`: `cuda`, `mps`, `cpu` (default: `mps`)
+- `SAM2_HF_MODEL_ID`: default `facebook/sam2.1-hiera-tiny`
 - `SAM2_VOS_OPTIMIZED`: `1|0`
 - `INFER_RESIZE_WIDTH`, `INFER_RESIZE_HEIGHT`: optional inference downscale
 - `RUNS_DIR`: output directory

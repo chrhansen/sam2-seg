@@ -40,9 +40,9 @@ def load_settings() -> Settings:
     runs_dir = Path(os.getenv("RUNS_DIR", root / "runs")).resolve()
     return Settings(
         runs_dir=runs_dir,
-        sam2_model_cfg=os.getenv("SAM2_MODEL_CFG", "configs/sam2.1/sam2.1_hiera_l.yaml"),
-        sam2_checkpoint=os.getenv("SAM2_CHECKPOINT", "checkpoints/sam2.1_hiera_large.pt"),
-        sam2_hf_model_id=os.getenv("SAM2_HF_MODEL_ID") or None,
+        sam2_model_cfg=os.getenv("SAM2_MODEL_CFG", "configs/sam2.1/sam2.1_hiera_t.yaml"),
+        sam2_checkpoint=os.getenv("SAM2_CHECKPOINT", "checkpoints/sam2.1_hiera_tiny.pt"),
+        sam2_hf_model_id=os.getenv("SAM2_HF_MODEL_ID", "facebook/sam2.1-hiera-tiny") or None,
         sam2_device=os.getenv("SAM2_DEVICE", "mps"),
         sam2_vos_optimized=_env_bool("SAM2_VOS_OPTIMIZED", False),
         infer_resize_width=_env_int("INFER_RESIZE_WIDTH"),
