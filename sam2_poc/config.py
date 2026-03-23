@@ -54,7 +54,7 @@ def load_settings() -> Settings:
         sam2_hf_model_id=os.getenv("SAM2_HF_MODEL_ID", "facebook/sam2.1-hiera-tiny") or None,
         sam2_device=os.getenv("SAM2_DEVICE", "mps"),
         sam2_vos_optimized=_env_bool("SAM2_VOS_OPTIMIZED", False),
-        sam2_fill_hole_area=_env_nonneg_int("SAM2_FILL_HOLE_AREA", 200),
+        sam2_fill_hole_area=_env_nonneg_int("SAM2_FILL_HOLE_AREA", 48),
         infer_resize_width=_env_int("INFER_RESIZE_WIDTH"),
         infer_resize_height=_env_int("INFER_RESIZE_HEIGHT"),
     )
