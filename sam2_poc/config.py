@@ -13,6 +13,7 @@ class Settings:
     sam2_hf_model_id: str | None
     sam2_device: str | None
     sam2_vos_optimized: bool
+    sam2_fill_hole_area: int
     infer_resize_width: int | None
     infer_resize_height: int | None
 
@@ -24,6 +25,14 @@ def _env_int(name: str) -> int | None:
         return None
     value = int(raw)
     return value if value > 0 else None
+
+
+def _env_nonneg_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None or raw == "":
+        return default
+    value = int(raw)
+    return max(0, value)
 
 
 
@@ -45,6 +54,7 @@ def load_settings() -> Settings:
         sam2_hf_model_id=os.getenv("SAM2_HF_MODEL_ID", "facebook/sam2.1-hiera-tiny") or None,
         sam2_device=os.getenv("SAM2_DEVICE", "mps"),
         sam2_vos_optimized=_env_bool("SAM2_VOS_OPTIMIZED", False),
+        sam2_fill_hole_area=_env_nonneg_int("SAM2_FILL_HOLE_AREA", 48),
         infer_resize_width=_env_int("INFER_RESIZE_WIDTH"),
         infer_resize_height=_env_int("INFER_RESIZE_HEIGHT"),
     )

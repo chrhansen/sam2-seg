@@ -74,6 +74,7 @@ def _get_predictor(settings: Settings, device: str):
         settings.sam2_checkpoint,
         device,
         settings.sam2_vos_optimized,
+        settings.sam2_fill_hole_area,
     )
     with _predictor_lock:
         cached = _predictor_cache.get(key)
@@ -88,10 +89,13 @@ def _get_predictor(settings: Settings, device: str):
                 "SAM2 import failed. Install SAM2 first (pip install -e . in segment-anything-2)."
             ) from exc
 
+        hydra_overrides_extra = [f"++model.fill_hole_area={settings.sam2_fill_hole_area}"]
         if settings.sam2_hf_model_id:
             predictor = SAM2VideoPredictor.from_pretrained(
                 settings.sam2_hf_model_id,
                 device=device,
+                apply_postprocessing=True,
+                hydra_overrides_extra=hydra_overrides_extra,
                 vos_optimized=settings.sam2_vos_optimized,
             )
         else:
@@ -106,6 +110,8 @@ def _get_predictor(settings: Settings, device: str):
                 config_file=settings.sam2_model_cfg,
                 ckpt_path=str(ckpt_path),
                 device=device,
+                apply_postprocessing=True,
+                hydra_overrides_extra=hydra_overrides_extra,
                 vos_optimized=settings.sam2_vos_optimized,
             )
 
@@ -263,7 +269,7 @@ def _mask_logits_device_name(out_mask_logits: object) -> str:
 
 
 def _overlay_frame(frame_bgr: np.ndarray, mask: np.ndarray | None, bbox: list[int] | None) -> np.ndarray:
-    if mask is None or bbox is None:
+    if mask is None:
         return frame_bgr
 
     out = frame_bgr.copy()
@@ -271,8 +277,13 @@ def _overlay_frame(frame_bgr: np.ndarray, mask: np.ndarray | None, bbox: list[in
     masked = mask > 0
     out[masked] = (0.55 * out[masked] + 0.45 * tint).astype(np.uint8)
 
-    x1, y1, x2, y2 = bbox
-    cv2.rectangle(out, (x1, y1), (x2, y2), (40, 40, 240), 2)
+    contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if contours:
+        cv2.drawContours(out, contours, -1, (0, 0, 0), 1, lineType=cv2.LINE_AA)
+
+    if bbox is not None:
+        x1, y1, x2, y2 = bbox
+        cv2.rectangle(out, (x1, y1), (x2, y2), (40, 40, 240), 2)
     return out
 
 
@@ -303,11 +314,12 @@ def run_sam2_click_track(
     requested_device = settings.sam2_device or "auto"
     model_ref = settings.sam2_hf_model_id or settings.sam2_checkpoint
     logger.info(
-        "[sam2][%s] start source=%s model=%s requested_device=%s mps_available=%s mps_built=%s",
+        "[sam2][%s] start source=%s model=%s requested_device=%s fill_hole_area=%d mps_available=%s mps_built=%s",
         job_ref,
         source_filename,
         model_ref,
         requested_device,
+        settings.sam2_fill_hole_area,
         torch.backends.mps.is_available(),
         torch.backends.mps.is_built(),
     )
@@ -511,7 +523,10 @@ def run_sam2_click_track(
                 "width": infer_w if resize_wh else None,
                 "height": infer_h if resize_wh else None,
             },
-            "notes": f"POC single-click SAM2 tracker; device={device}; model={model_ref}",
+            "notes": (
+                f"POC single-click SAM2 tracker; device={device}; model={model_ref}; "
+                f"fill_hole_area={settings.sam2_fill_hole_area}"
+            ),
         },
         "target": {
             "target_id": "target-0",

@@ -68,7 +68,8 @@ Run locally with GPU:
 ```bash
 docker run --rm --gpus all -p 8000:8000 \
   -e SAM2_DEVICE=cuda \
-  -e SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-tiny \
+  -e SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-large \
+  -e SAM2_VOS_OPTIMIZED=0 \
   ghcr.io/chrhansen/sam2-seg:latest
 ```
 
@@ -79,6 +80,7 @@ For RunPod Pod image field, use: `ghcr.io/chrhansen/sam2-seg:latest`.
 - `SAM2_DEVICE`: `cuda`, `mps`, `cpu` (default: `mps`)
 - `SAM2_HF_MODEL_ID`: default `facebook/sam2.1-hiera-tiny`
 - `SAM2_VOS_OPTIMIZED`: `1|0`
+- `SAM2_FILL_HOLE_AREA`: official SAM2 hole-fill postprocess area (default: `48`; set `0` to disable)
 - `INFER_RESIZE_WIDTH`, `INFER_RESIZE_HEIGHT`: optional inference downscale
 - `RUNS_DIR`: output directory
 
@@ -94,3 +96,4 @@ export SAM2_DEVICE=cpu
 - `frames[].present=false` when no mask in frame.
 - Outputs stored under `runs/<job_id>/`.
 - Server logs include `[sam2][<job_id>]` lines with requested/resolved device and inference speed.
+- RunPod large-model default uses `SAM2_VOS_OPTIMIZED=0`; `1` can spend many minutes in first-run Triton/Torch compile/autotune and appear stuck at `20%`.
