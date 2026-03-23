@@ -21,7 +21,7 @@ The file should be **one per processed video**.
     "num_frames": 600
   },
   "processing": {
-    "method": "yolo_seg_track | sam2_vos",
+    "method": "sam2_vos",
     "created_at": "2026-02-15T21:00:00Z",
     "frame_resize": {
       "applied": false,
