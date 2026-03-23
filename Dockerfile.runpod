@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility \
     SAM2_DEVICE=cuda \
     SAM2_VOS_OPTIMIZED=0 \
-    SAM2_FILL_HOLE_AREA=48 \
+    SAM2_FILL_HOLE_AREA=200 \
     SAM2_HF_MODEL_ID=facebook/sam2.1-hiera-large
 
 RUN apt-get update && apt-get install -y --no-install-recommends \

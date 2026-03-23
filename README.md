@@ -80,7 +80,7 @@ For RunPod Pod image field, use: `ghcr.io/chrhansen/sam2-seg:latest`.
 - `SAM2_DEVICE`: `cuda`, `mps`, `cpu` (default: `mps`)
 - `SAM2_HF_MODEL_ID`: default `facebook/sam2.1-hiera-tiny`
 - `SAM2_VOS_OPTIMIZED`: `1|0`
-- `SAM2_FILL_HOLE_AREA`: official SAM2 hole-fill postprocess area (default: `48`; set `0` to disable)
+- `SAM2_FILL_HOLE_AREA`: official SAM2 hole-fill postprocess area (default: `200`; set `0` to disable)
 - `INFER_RESIZE_WIDTH`, `INFER_RESIZE_HEIGHT`: optional inference downscale
 - `RUNS_DIR`: output directory
 
